@@ -8,7 +8,8 @@
 import Foundation
 
 struct FoodInfo: Hashable {
-    var name: String
-    var until: Date
-    var description: String
+    var name: [String]
+    var until: [Date]
+    var description: [String]
+    var key: [String]
 }

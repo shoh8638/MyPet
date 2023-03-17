@@ -73,13 +73,12 @@ extension InitVC: ASAuthorizationControllerPresentationContextProviding {
         }
         
         let authCrendetial = OAuthProvider.credential(withProviderID: "apple.com", idToken: idTokenString, rawNonce: nonce)
-        Utils().aa(nonce: nonce, appleIDCredential: appleIDCredential)
         
-        Auth.auth().signIn(with: authCrendetial) { (result, error) in
-            if let err = error {
-                print("authoriztion signIn: %@", err)
+        Network().checkLoginInfo(appleIDCredential: appleIDCredential, authCrendetial: authCrendetial) { result in
+            if result {
+                Network().initSaveToDB(appleIDCredential: appleIDCredential, vc: self)
             } else {
-                Utils().saveToDB(appleIDCredential: appleIDCredential)
+
             }
         }
     }

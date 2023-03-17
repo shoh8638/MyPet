@@ -7,7 +7,9 @@
 
 import UIKit
 import AuthenticationServices
+import FirebaseAuth
 import FirebaseFirestore
+import ProgressHUD
 
 class Utils: NSObject {
     let db = Firestore.firestore()
@@ -58,46 +60,19 @@ class Utils: NSObject {
         return result
     }
     
-    func aa(nonce: String, appleIDCredential: ASAuthorizationAppleIDCredential) {
-        
-    }
-    
-    func saveToDB(appleIDCredential: ASAuthorizationAppleIDCredential) {
-        let  userIdentifier = appleIDCredential.user
-        guard let fullName = appleIDCredential.fullName else { return }
-        guard let email = appleIDCredential.email else { return }
-        let userName = "\(fullName.familyName!)\(fullName.givenName!)"
-        Utils().saveToUserDefaults(value: email, key: "email")
-        Utils().saveToUserDefaults(value: userIdentifier, key: "userIdentifier")
-        Utils().saveToUserDefaults(value: userName, key: "userName")
-        
-        let data: [String: Any] = [
-            "userIdentifier": userIdentifier,
-            "userName": userName,
-            "email": email
-        ]
-        //데이터베이스 쓰기
-        self.db.collection(userIdentifier).document("BasicInfo").setData(data){ error in
-            if let err = error {
-                print("DB create Error: \(err)")
-            } else {
-                print("Document added")
-            }
-        }
-        //데이터베이스 읽기
-        self.db.collection(userIdentifier).document("user1").getDocument { document, error in
-            if let err = error {
-                print("DB create Error: \(err)")
-            } else {
-                if let document = document {
-                    let data = document.data()
-                    if(data == nil) {
-                        
-                    } else {
-                        
-                    }
-                }
-            }
+    func introVCDidFinish(result: Bool, vc: UIViewController) {
+        if result {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let viewController = storyboard.instantiateViewController(withIdentifier: "HomeVC") as! HomeVC
+            viewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+            viewController.modalPresentationStyle = .fullScreen
+            vc.present(viewController, animated: true)
+        } else {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let viewController = storyboard.instantiateViewController(withIdentifier: "InitVC")
+            viewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+            viewController.modalPresentationStyle = .fullScreen
+            vc.present(viewController, animated: true)
         }
     }
 }

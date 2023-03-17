@@ -8,5 +8,7 @@
 import Foundation
 
 struct ImgInfo: Hashable {
-    var imgName: String
+    var imgName: [String]
+    var date: [Date]
+    var key: [String]
 }

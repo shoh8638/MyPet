@@ -11,11 +11,14 @@ target 'MyPet' do
     inherit! :search_paths
     # Pods for testing
   end
-pod 'FirebaseAuth'
-pod 'FirebaseFirestore'
-pod 'FirebaseAnalytics'
+
   target 'MyPetUITests' do
     # Pods for testing
   end
+
+pod 'FirebaseAuth'
+pod 'FirebaseFirestore'
+pod 'FirebaseAnalytics'
+pod 'ProgressHUD'
 
 end
