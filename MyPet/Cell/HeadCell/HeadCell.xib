@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionReusableView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" restorationIdentifier="HeadCell" reuseIdentifier="HeadCell" id="U6b-Vx-4bR" customClass="HeadCell" customModule="MyPet" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eM2-Fx-MYb">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DuH-zA-ewj">
+                            <rect key="frame" x="10" y="10" width="42" height="30"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pLD-hw-H2A">
+                            <rect key="frame" x="235" y="10" width="75" height="30"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                        </button>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tec-kf-UDc">
+                            <rect key="frame" x="0.0" y="48" width="320" height="2"/>
+                            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="2" id="Vg1-ov-Z9Y"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstItem="pLD-hw-H2A" firstAttribute="top" secondItem="eM2-Fx-MYb" secondAttribute="top" constant="10" id="16m-f4-WhA"/>
+                        <constraint firstAttribute="trailing" secondItem="pLD-hw-H2A" secondAttribute="trailing" constant="10" id="9vX-6Y-391"/>
+                        <constraint firstItem="DuH-zA-ewj" firstAttribute="centerY" secondItem="eM2-Fx-MYb" secondAttribute="centerY" id="JFz-7g-xEJ"/>
+                        <constraint firstItem="pLD-hw-H2A" firstAttribute="centerY" secondItem="DuH-zA-ewj" secondAttribute="centerY" id="XsA-PD-8Y7"/>
+                        <constraint firstAttribute="bottom" secondItem="tec-kf-UDc" secondAttribute="bottom" id="fM6-nX-lsb"/>
+                        <constraint firstItem="DuH-zA-ewj" firstAttribute="top" secondItem="eM2-Fx-MYb" secondAttribute="top" constant="10" id="ikQ-ab-8ar"/>
+                        <constraint firstItem="DuH-zA-ewj" firstAttribute="leading" secondItem="eM2-Fx-MYb" secondAttribute="leading" constant="10" id="oDJ-lh-BL1"/>
+                        <constraint firstAttribute="trailing" secondItem="tec-kf-UDc" secondAttribute="trailing" id="oqh-aV-JPW"/>
+                        <constraint firstItem="tec-kf-UDc" firstAttribute="leading" secondItem="eM2-Fx-MYb" secondAttribute="leading" id="ptG-gb-vvu"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="VXr-Tz-HHm"/>
+            <constraints>
+                <constraint firstItem="VXr-Tz-HHm" firstAttribute="trailing" secondItem="eM2-Fx-MYb" secondAttribute="trailing" id="CZX-NJ-hq8"/>
+                <constraint firstItem="eM2-Fx-MYb" firstAttribute="top" secondItem="U6b-Vx-4bR" secondAttribute="top" id="KcD-9a-tqC"/>
+                <constraint firstItem="eM2-Fx-MYb" firstAttribute="leading" secondItem="VXr-Tz-HHm" secondAttribute="leading" id="Mcf-l5-nid"/>
+                <constraint firstAttribute="bottom" secondItem="eM2-Fx-MYb" secondAttribute="bottom" id="gSb-Gs-pk5"/>
+            </constraints>
+            <connections>
+                <outlet property="btn" destination="pLD-hw-H2A" id="Jvt-gh-hAO"/>
+                <outlet property="divide" destination="tec-kf-UDc" id="OdB-5s-u6g"/>
+                <outlet property="headTitle" destination="DuH-zA-ewj" id="Edd-yM-yqs"/>
+            </connections>
+            <point key="canvasLocation" x="6" y="21"/>
+        </collectionReusableView>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

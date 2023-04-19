@@ -63,7 +63,7 @@ class Utils: NSObject {
     func introVCDidFinish(result: Bool, vc: UIViewController) {
         if result {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let viewController = storyboard.instantiateViewController(withIdentifier: "HomeVC") as! HomeVC
+            let viewController = storyboard.instantiateViewController(withIdentifier: "HomeSecondVC") as! HomeSecondVC
             viewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
             viewController.modalPresentationStyle = .fullScreen
             vc.present(viewController, animated: true)

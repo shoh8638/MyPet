@@ -20,5 +20,6 @@ pod 'FirebaseAuth'
 pod 'FirebaseFirestore'
 pod 'FirebaseAnalytics'
 pod 'ProgressHUD'
-
+pod 'FirebaseStorage'
+pod 'SDWebImage'
 end
