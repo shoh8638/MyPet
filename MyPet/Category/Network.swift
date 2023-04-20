@@ -55,83 +55,65 @@ class Network: NSObject {
             "userName": userName,
             "email": email
         ]
-        //데이터베이스 쓰기
         self.db.collection(userIdentifier).document("BasicInfo").setData(data){ error in
             if let err = error {
                 print("DB create Error: \(err)")
             } else {
                 print("Document added")
-                self.createHomeData(vc: vc) {
+                self.createInitData(vc: vc) {
                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    let viewController = storyboard.instantiateViewController(withIdentifier: "HomeVC")
+                    let viewController = storyboard.instantiateViewController(withIdentifier: "HomeSecondVC")
                     viewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
                     viewController.modalPresentationStyle = .fullScreen
                     vc.present(viewController, animated: true)
                 }
             }
         }
-        /*
-        //데이터베이스 읽기
-        self.db.collection(userIdentifier).document("user1").getDocument { document, error in
-            if let err = error {
-                print("DB create Error: \(err)")
-            } else {
-                if let document = document {
-                    let data = document.data()
-                    if(data == nil) {
-                        
-                    } else {
-                        
-                    }
-                }
-            }
-        }
-         */
     }
     
-    func createHomeData(vc: UIViewController, completion: @escaping () -> ()) {
+    func createInitData(vc: UIViewController, completion: @escaping () -> ()) {
         let userId = Utils().loadFromUserDefaults(key: "userIdentifier") as? String ?? ""
         if userId != "" {
-            //최초 ImgInfo db 생성
-            self.db.collection(userId).document("ImgInfo").setData([
-                "imgName": [String: Any](),
-                "imgSaveTime": [String: Any](),
-                "key": [String]()
-            ]) { error in
-                    if let err = error {
-                        print("DB create Error: \(err)")
-                    } else {
-                        Utils().saveToUserDefaults(value: "save", key: "ImgInfo")
-                    }
-                }
             //최초 FoodInfo db 생성
-            self.db.collection(userId).document("FoodInfo").setData([
-                "foodName": [String: Any](),
-                "foodUntil": [String: Any](),
-                "foodDescription": [String: Any](),
-                "key": [String]()
+            self.db.collection(userId).document("FoodInfoDB").setData([
+                "Name": [String: Any](),
+                "Date": [String: Any](),
+                "Descriptopm": [String: Any](),
+                "Key": [String]()
             ]){ error in
                 if let err = error {
-                    print("DB create Error: \(err)")
+                    print("FoodInfoDB create Error: \(err)")
                 } else {
-                    Utils().saveToUserDefaults(value: "save", key: "FoodInfo")
+                    print("FoodInfoDB create")
                 }
             }
-            
-            //최초 ListInfo db 생성
-            self.db.collection(userId).document("ListInfo").setData([
-                "listTitle": [String: Any](),
-                "listUntil": [String: Any](),
-                "listImg": [String: Any](),
-                "listText": [String: Any](),
-                "key": [String]()
-            ]){ error in
+            //최초 Category db 생성
+            self.db.collection(userId).document("CategoryInfoDB").setData([:]){ error in
                 if let err = error {
                     print("DB create Error: \(err)")
                 } else {
-                    Utils().saveToUserDefaults(value: "save", key: "ListInfo")
+                    self.db.collection(userId).document("CategoryInfoDB").collection("Food").document().setData([:]) { error in
+                        if let err = error {
+                            print("CategoryInfoDB- Food create Error: \(err)")
+                        } else {
+                            print("CategoryInfoDB- Food create")
+                        }
+                    }
+                    self.db.collection(userId).document("CategoryInfoDB").collection("Trip").document().setData([:]) { error in
+                        if let err = error {
+                            print("CategoryInfoDB- Trip create Error: \(err)")
+                        } else {
+                            print("CategoryInfoDB- Trip create")
+                        }
+                    }
+                    self.db.collection(userId).document("CategoryInfoDB").collection("Daily").document().setData([:]) { error in
+                        if let err = error {
+                            print("CategoryInfoDB- Daily create Error: \(err)")
+                        } else {
+                            print("CategoryInfoDB- Daily create")
+                        }
+                    }
                 }
-                completion()
             }
         } else {
             Alert().exitOKAlert(vc: vc)
@@ -154,6 +136,57 @@ class Network: NSObject {
         }
     }
     
+    func createGalleryDB(vc: UIViewController, name: String, gender: String, date: String, info: [UIImagePickerController.InfoKey : Any], completion: @escaping () -> ()) {
+        guard let userId = Utils().loadFromUserDefaults(key: "userIdentifier") as? String else { return }
+        let userRef = storage.reference().child(userId)
+        guard let imageURL = info[.imageURL] as? URL else { return }
+        let imageName = imageURL.lastPathComponent
+        let pathRef = userRef.child("Gallery").child(imageName)
+        guard let imageData = try? Data(contentsOf: imageURL) else { return }
+        
+        pathRef.putData(imageData) {  (metadata, error) in
+            guard error == nil else { return }
+            pathRef.downloadURL { (url, error) in
+                if let error = error {
+                    print("Error uploading image to Firebase Storage: \(error.localizedDescription)")
+                } else {
+                    guard let url = url else { return }
+                    self.db.collection(userId).document("GalleryDB").setData([
+                        "name": name,
+                        "gender": gender,
+                        "date": date,
+                        "downLoadUrls": [url]]) { error in
+                        if let err = error {
+                            print("CategoryInfoDB- Daily create Error: \(err)")
+                        } else {
+                            print("CategoryInfoDB- Daily create")
+                        }
+                    }
+                }
+            }
+        }
+        
+        
+    }
+    
+    func loadIsMain(vc: UIViewController, completion: @escaping () -> ()) {
+        guard let userId = Utils().loadFromUserDefaults(key: "userIdentifier") as? String else { return }
+        self.db.collection(userId).getDocuments { (querySnapshot, error) in
+            if let error = error {
+                print("Error getting documents: \(error)")
+            } else {
+                for document in querySnapshot!.documents {
+                    print("\(document.documentID) => \(document.data())")
+                    if document.documentID == "GalleryDB" {
+                        
+                    } else if document.documentID == "FoodInfoDB" {
+                        
+                    }
+                }
+            }
+        }
+    }
+
     func uploadImage(filePath: String, info: [UIImagePickerController.InfoKey : Any], completion: @escaping (URL) -> ()) {
         let userId = Utils().loadFromUserDefaults(key: "userIdentifier") as? String ?? ""
         let userRef = storage.reference().child(userId)

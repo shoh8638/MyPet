@@ -40,6 +40,7 @@
 		E68679B929EFA6CA007EB4CF /* HomeSecondVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68679B829EFA6CA007EB4CF /* HomeSecondVC.swift */; };
 		E68679BC29EFB5E8007EB4CF /* HomeSubCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68679BA29EFB5E8007EB4CF /* HomeSubCell.swift */; };
 		E68679BD29EFB5E8007EB4CF /* HomeSubCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = E68679BB29EFB5E8007EB4CF /* HomeSubCell.xib */; };
+		E68679C029F11A6E007EB4CF /* GalleryInitVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68679BF29F11A6E007EB4CF /* GalleryInitVC.swift */; };
 		E68A3FD929BEF94A006AFFC6 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68A3FD829BEF94A006AFFC6 /* Utils.swift */; };
 		E68A3FDB29C04F5E006AFFC6 /* Intro.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E68A3FDA29C04F5E006AFFC6 /* Intro.storyboard */; };
 /* End PBXBuildFile section */
@@ -104,6 +105,7 @@
 		E68679B829EFA6CA007EB4CF /* HomeSecondVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSecondVC.swift; sourceTree = "<group>"; };
 		E68679BA29EFB5E8007EB4CF /* HomeSubCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSubCell.swift; sourceTree = "<group>"; };
 		E68679BB29EFB5E8007EB4CF /* HomeSubCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HomeSubCell.xib; sourceTree = "<group>"; };
+		E68679BF29F11A6E007EB4CF /* GalleryInitVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryInitVC.swift; sourceTree = "<group>"; };
 		E68A3FD829BEF94A006AFFC6 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		E68A3FDA29C04F5E006AFFC6 /* Intro.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Intro.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -228,6 +230,7 @@
 				E610826A29BC4A3900DAD1D4 /* CalVC.swift */,
 				E610826C29BC4A4200DAD1D4 /* SetVC.swift */,
 				E68679B829EFA6CA007EB4CF /* HomeSecondVC.swift */,
+				E68679BF29F11A6E007EB4CF /* GalleryInitVC.swift */,
 			);
 			path = VC;
 			sourceTree = "<group>";
@@ -547,6 +550,7 @@
 				E610826929BC4A2E00DAD1D4 /* ListVC.swift in Sources */,
 				E68679B929EFA6CA007EB4CF /* HomeSecondVC.swift in Sources */,
 				E649E36229C158F200565CEF /* Data.swift in Sources */,
+				E68679C029F11A6E007EB4CF /* GalleryInitVC.swift in Sources */,
 				E610827929BC534800DAD1D4 /* InitVC.swift in Sources */,
 				E610827429BC4BE700DAD1D4 /* HomeMainCell.swift in Sources */,
 				E610826B29BC4A3900DAD1D4 /* CalVC.swift in Sources */,
