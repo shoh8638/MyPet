@@ -86,7 +86,7 @@ class Network: NSObject {
                     self.createInitData(vc: vc) {
                         //GalleryDB 및 초기 설정 진행
                         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                        let viewController = storyboard.instantiateViewController(withIdentifier: "HomeSecondVC")
+                        let viewController = storyboard.instantiateViewController(withIdentifier: "GalleryInitVC") as! GalleryInitVC
                         viewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
                         viewController.modalPresentationStyle = .fullScreen
                         vc.present(viewController, animated: true)
@@ -168,11 +168,12 @@ class Network: NSObject {
                     print("Error uploading image to Firebase Storage: \(error.localizedDescription)")
                 } else {
                     guard let url = url else { return }
-                    self.db.collection(userId).document("GalleryDB").setData([
+                    let urlString = url.absoluteString
+                    self.db.collection(userId).document("GalleryDB").collection(date).document().setData([
                         "name": name,
                         "gender": gender,
                         "date": date,
-                        "downLoadUrls": [url]]) { error in
+                        "downLoadUrls": [urlString]]) { error in
                             if let err = error {
                                 print("CategoryInfoDB- Daily create Error: \(err)")
                             } else {

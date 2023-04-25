@@ -62,14 +62,16 @@ class GalleryInitVC: UIViewController,UIImagePickerControllerDelegate, UINavigat
     }
     
     @IBAction func tap(_ sender: Any) {
-        //이미지, 이름, 성별 정보3개가 있어야 저장 및 메인으로 전달 -> GalleryDB에 저장되면 메인에서 reload후 보여지게끔
-        //저장 시, imgUrl.lastPathComponent이름으로 하여금 저장
-
-//        Utils().introVCDidFinish(result: "true", vc: self)
+        guard let name = self.nameText.text else { return }
+        guard let gender = self.genderText.text else { return }
+        guard let date = self.dateText.text else { return }
+        Network().createGalleryDB(vc: self, name: name, gender: gender, date: date, info: self.imginfo) {
+            //isFirst에 대한 값을 수정해야됨
+            Utils().introVCDidFinish(result: "true", vc: self)
+        }
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        guard let imageURL = info[.imageURL] as? URL else { return }
         /*
          이미지 코덱 사용
          이미지 코덱을 사용하여 이미지를 불러올 때, 이미지의 압축률을 조정하여 이미지의 크기를 줄이는 방법입니다. 이 방법을 사용하면 이미지의 크기를 줄이면서도 이미지의 화질을 유지할 수 있습니다.
@@ -110,7 +112,7 @@ extension GalleryInitVC: UIPickerViewDelegate, UIPickerViewDataSource, UITextFie
     
     @objc func tapDatePicker(_ datePieker: UIDatePicker) {
         let formmater = DateFormatter()
-        formmater.dateFormat = "yyyy 년 MM 월 dd 일"
+        formmater.dateFormat = "yyyy 년 MM 월 dd 일 EEEE"
         formmater.locale = Locale(identifier: "ko_KR")
         self.dateText.text = formmater.string(from: datePieker.date)
     }
