@@ -173,33 +173,68 @@ class Network: NSObject {
                         "name": name,
                         "gender": gender,
                         "date": date,
+                        "isMain": true,
                         "downLoadUrls": [urlString]]) { error in
                             if let err = error {
-                                print("CategoryInfoDB- Daily create Error: \(err)")
+                                print("GalleryDB create Error: \(err)")
                             } else {
-                                print("CategoryInfoDB- Daily create")
-                                completion()
+                                print("GalleryDB create")
                             }
                         }
+                    self.db.collection(userId).document("GalleryDBKey").setData(["Key": date]){ error in
+                        if let err = error {
+                            print("return err:\(err)")
+                        } else {
+                            print("Success KeyDB")
+                            completion()
+                        }
+                    }
                 }
             }
         }
     }
     
-    func loadIsMain(vc: UIViewController, completion: @escaping () -> ()) {
-        let userId = Utils().loadFromUserDefaults(key: "userId") as! String
-        self.db.collection(userId).getDocuments { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting documents: \(error)")
+    func loadIsGalleryKey(completion: @escaping ([String: Any]) -> ()) {
+        guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else { return }
+        self.db.collection(userId).document("GalleryDBKey").getDocument(completion: { (document, error) in
+            if let err = error {
+                print("Error load Key List: \(err)")
             } else {
-                for document in querySnapshot!.documents {
-                    print("\(document.documentID) => \(document.data())")
-                    if document.documentID == "GalleryDB" {
-                        
-                    } else if document.documentID == "FoodInfoDB" {
-                        
+                if let document = document, document.exists {
+                    guard let data = document.data() else { return }
+                    guard let keys = data["Key"] as? [String] else { return}
+                    self.loadIsGalleryDB(keys: keys) { data in
+                        completion(data)
                     }
+                } else {
+                    print("Document does not exist")
                 }
+            }
+        })
+    }
+    
+    func loadIsGalleryDB(keys: [String], completion: @escaping ([String: Any]) -> ()) {
+        guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else { return }
+        for i in keys {
+            self.db.collection(userId).document("GalleryDB").collection(i).whereField("isMain", isEqualTo: true).getDocuments { (querySnapshot, error) in
+                if let error = error {
+                        print("Error fetching documents: \(error)")
+                    } else {
+                        guard let documents = querySnapshot?.documents else {
+                            print("No documents found")
+                            return
+                        }
+                        for document in documents {
+                            let data = document.data()
+                            let isMain = data["isMain"] as? Bool ?? false
+                            let url = data["downLoadUrls"] as? String ?? ""
+                            if isMain {
+                                print("Document with isMain = true: \(data)")
+                                print("Document with isMain = true: \(url)")
+                                completion(data)
+                            }
+                        }
+                    }
             }
         }
     }

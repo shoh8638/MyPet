@@ -11,27 +11,27 @@ class HomeSecondVC: UIViewController {
     
     @IBOutlet weak var collectionView: UICollectionView!
     
+    var galleryKeyList: [String]!
+    var galleryList: [[String : Any]]!
+    var untilDate: [[String : Any]]!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+//        self.registerForCollectionView()
+        self.configuration()
+    }
+    
+    func registerForCollectionView() {
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
         self.collectionView.register(UINib(nibName: "HeadCell", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeadCell")
         self.collectionView.register(UINib(nibName: "HomeMainCell", bundle: nil), forCellWithReuseIdentifier: "HomeMainCell")
         self.collectionView.register(UINib(nibName: "HomeSubCell", bundle: nil), forCellWithReuseIdentifier: "HomeSubCell")
-//        self.configure()
     }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-//        self.configure()
-    }
-    func configure() {
-        let isFirst = Utils().loadFromUserDefaults(key: "isFirst") as? Bool ?? false
-        if isFirst {
-            //isFirst == true -> galleryDB load 및 foodInfoDB load
-        } else {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let viewController = storyboard.instantiateViewController(withIdentifier: "GalleryInitVC") as! GalleryInitVC
-            self.present(viewController, animated: true)
+    
+    func configuration() {
+        Network().loadIsGalleryKey { data in
+            print("HomeVC :\(data)")       
         }
     }
 }
