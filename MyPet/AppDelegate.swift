@@ -16,9 +16,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         FirebaseApp.configure()
-        Utils().removeFromUserDefaults(key: "ImgInfo")
-        Utils().removeFromUserDefaults(key: "FoodInfo")
-        Utils().removeFromUserDefaults(key: "ListInfo")
         return true
     }
     

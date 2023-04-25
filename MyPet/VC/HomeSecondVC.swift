@@ -22,19 +22,17 @@ class HomeSecondVC: UIViewController {
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.configure()
+//        self.configure()
     }
     func configure() {
-//        let isFirst = false
-//        if isFirst {
+        let isFirst = Utils().loadFromUserDefaults(key: "isFirst") as? Bool ?? false
+        if isFirst {
             //isFirst == true -> galleryDB load 및 foodInfoDB load
-//        } else {
+        } else {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let viewController = storyboard.instantiateViewController(withIdentifier: "GalleryInitVC") as! GalleryInitVC
-            viewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
-            viewController.modalPresentationStyle = .fullScreen
             self.present(viewController, animated: true)
-//        }
+        }
     }
 }
 
@@ -78,8 +76,9 @@ extension HomeSecondVC: UICollectionViewDelegate, UICollectionViewDataSource , U
     }
     
     @objc func tapGoGallery(_ sender: UIButton) {
-        print("tap go")
-    }
+          print("tap go")
+          //GalleryView로 넘어가 사진들이 쭉 보이고 마지막 한개는 추가 셀로 버튼을 누르면 갤러리가 나오고 사진 선택 시, 서버에 저장 및 reload하여 셀 다시 수정
+      }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {

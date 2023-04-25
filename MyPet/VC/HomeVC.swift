@@ -46,7 +46,7 @@ class HomeVC: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
        let dateFormatter = DateFormatter()
        dateFormatter.dateFormat = "yyyy-MM-dd"
        dateFormatter.locale = Locale(identifier: "ko_KR")
-        Network().loadDocumentData(vc: self) { quetysnapshot in
+       Network().loadDocumentData(vc: self) { quetysnapshot in
             for document in quetysnapshot!.documents {
                 if document.documentID == "ImgInfo" {
                 //해당 field -> field안에 key값을 가지고 처리

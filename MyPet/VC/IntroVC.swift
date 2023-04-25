@@ -22,14 +22,12 @@ class IntroVC: UIViewController {
         //network관련 정보 확인
         ProgressHUD.show("로딩중...")
         Network().introVCCheckAuth { result in
-            if result {
-                DispatchQueue.main.async {
-                    Utils().introVCDidFinish(result: true, vc: self)
+            if result == "true" || result == "fasle" {
+                Network().isFirstTrueOrFalseDB { result in
+                    Utils().introVCDidFinish(result: result, vc: self)
                 }
-            } else {
-                DispatchQueue.main.async {
-                    Utils().introVCDidFinish(result: false, vc: self)
-                }
+            } else if result == "Not" {
+                Utils().introVCDidFinish(result: result, vc: self)
             }
         }
     }

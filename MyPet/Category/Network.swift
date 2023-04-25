@@ -26,15 +26,32 @@ class Network: NSObject {
             }
         }
     }
-    
-    func introVCCheckAuth(completion: @escaping (Bool) -> ()) {
+    func isFirstTrueOrFalseDB(completion: @escaping (String) -> ()) {
+        let userId = Utils().loadFromUserDefaults(key: "userId") as! String
+        self.db.collection(userId).document("BasicInfo").getDocument { (document, error) in
+            if let document = document, document.exists {
+                let data = document.data()
+                if let isFirst = data?["isFirst"] as? Bool {
+                    if isFirst == true {
+                        completion("true")
+                    } else {
+                        completion("false")
+                    }
+                }
+            }
+        }
+    }
+    func introVCCheckAuth(completion: @escaping (String) -> ()) {
         let appleIDProvider = ASAuthorizationAppleIDProvider()
-        appleIDProvider.getCredentialState(forUserID:"001304.74940427db3540a290e6ecf38315f167.0444") { (credentialState, error) in
+        guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else {
+            return completion("Not")
+        }
+        appleIDProvider.getCredentialState(forUserID:userId) { (credentialState, error) in
             switch credentialState {
             case .authorized:
-                completion(true)
+                completion("true")
             case .revoked, .notFound:
-                completion(false)
+                completion("Not")
             default:
                 break
             }
@@ -43,101 +60,101 @@ class Network: NSObject {
     
     func initSaveToDB(appleIDCredential: ASAuthorizationAppleIDCredential, vc: UIViewController) {
         let  userIdentifier = appleIDCredential.user
-        guard let fullName = appleIDCredential.fullName else { return }
-        guard let email = appleIDCredential.email else { return }
-        let userName = "\(fullName.familyName!)\(fullName.givenName!)"
-        Utils().saveToUserDefaults(value: email, key: "email")
-        Utils().saveToUserDefaults(value: userIdentifier, key: "userIdentifier")
-        Utils().saveToUserDefaults(value: userName, key: "userName")
-        
-        let data: [String: Any] = [
-            "userIdentifier": userIdentifier,
-            "userName": userName,
-            "email": email
-        ]
-        self.db.collection(userIdentifier).document("BasicInfo").setData(data){ error in
-            if let err = error {
-                print("DB create Error: \(err)")
-            } else {
-                print("Document added")
-                self.createInitData(vc: vc) {
-                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    let viewController = storyboard.instantiateViewController(withIdentifier: "HomeSecondVC")
-                    viewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
-                    viewController.modalPresentationStyle = .fullScreen
-                    vc.present(viewController, animated: true)
+        if appleIDCredential.email == nil {
+            Utils().saveToUserDefaults(value: userIdentifier, key: "userId")
+            //BasicInfo -> isFirst값에 따라 나타나는 View 변경
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let viewController = storyboard.instantiateViewController(withIdentifier: "HomeSecondVC")
+            viewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+            viewController.modalPresentationStyle = .fullScreen
+            vc.present(viewController, animated: true)
+        } else {
+            guard let fullName = appleIDCredential.fullName else { return }
+            guard let email = appleIDCredential.email else { return }
+            let userName = "\(fullName.familyName!)\(fullName.givenName!)"
+            Utils().saveToUserDefaults(value: userIdentifier, key: "userId")
+            self.db.collection(userIdentifier).document("BasicInfo").setData([
+                "userIdentifier": userIdentifier,
+                "userName": userName,
+                "email": email,
+                "isFirst": false
+            ]){ error in
+                if let err = error {
+                    print("DB create Error: \(err)")
+                } else {
+                    print("Document added")
+                    self.createInitData(vc: vc) {
+                        //GalleryDB 및 초기 설정 진행
+                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                        let viewController = storyboard.instantiateViewController(withIdentifier: "HomeSecondVC")
+                        viewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+                        viewController.modalPresentationStyle = .fullScreen
+                        vc.present(viewController, animated: true)
+                    }
                 }
             }
         }
     }
     
     func createInitData(vc: UIViewController, completion: @escaping () -> ()) {
-        let userId = Utils().loadFromUserDefaults(key: "userIdentifier") as? String ?? ""
-        if userId != "" {
-            //최초 FoodInfo db 생성
-            self.db.collection(userId).document("FoodInfoDB").setData([
-                "Name": [String: Any](),
-                "Date": [String: Any](),
-                "Descriptopm": [String: Any](),
-                "Key": [String]()
-            ]){ error in
-                if let err = error {
-                    print("FoodInfoDB create Error: \(err)")
-                } else {
-                    print("FoodInfoDB create")
-                }
+        //최초 FoodInfo db 생성
+        //저장되는건 document안에 document
+        let userId = Utils().loadFromUserDefaults(key: "userId") as! String
+        self.db.collection(userId).document("FoodInfoDB").setData([:]){ error in
+            if let err = error {
+                print("FoodInfoDB create Error: \(err)")
+            } else {
+                print("FoodInfoDB create")
             }
-            //최초 Category db 생성
-            self.db.collection(userId).document("CategoryInfoDB").setData([:]){ error in
-                if let err = error {
-                    print("DB create Error: \(err)")
-                } else {
-                    self.db.collection(userId).document("CategoryInfoDB").collection("Food").document().setData([:]) { error in
-                        if let err = error {
-                            print("CategoryInfoDB- Food create Error: \(err)")
-                        } else {
-                            print("CategoryInfoDB- Food create")
-                        }
+        }
+        //최초 Category db 생성
+        //category를 고르면, 카테고리안에 userId.docuemnt("CategoryInfoDB").docuemnt(category).document(date)로 저장
+        self.db.collection(userId).document("CategoryInfoDB").setData([:]){ error in
+            if let err = error {
+                print("DB create Error: \(err)")
+            } else {
+                self.db.collection(userId).document("CategoryInfoDB").collection("Food").document().setData([:]) { error in
+                    if let err = error {
+                        print("CategoryInfoDB- Food create Error: \(err)")
+                    } else {
+                        print("CategoryInfoDB- Food create")
                     }
-                    self.db.collection(userId).document("CategoryInfoDB").collection("Trip").document().setData([:]) { error in
-                        if let err = error {
-                            print("CategoryInfoDB- Trip create Error: \(err)")
-                        } else {
-                            print("CategoryInfoDB- Trip create")
-                        }
+                }
+                self.db.collection(userId).document("CategoryInfoDB").collection("Trip").document().setData([:]) { error in
+                    if let err = error {
+                        print("CategoryInfoDB- Trip create Error: \(err)")
+                    } else {
+                        print("CategoryInfoDB- Trip create")
                     }
-                    self.db.collection(userId).document("CategoryInfoDB").collection("Daily").document().setData([:]) { error in
-                        if let err = error {
-                            print("CategoryInfoDB- Daily create Error: \(err)")
-                        } else {
-                            print("CategoryInfoDB- Daily create")
-                        }
+                }
+                self.db.collection(userId).document("CategoryInfoDB").collection("Daily").document().setData([:]) { error in
+                    if let err = error {
+                        print("CategoryInfoDB- Daily create Error: \(err)")
+                    } else {
+                        print("CategoryInfoDB- Daily create")
+                        completion()
                     }
                 }
             }
-        } else {
-            Alert().exitOKAlert(vc: vc)
         }
     }
     
     func loadDocumentData(vc: UIViewController, completion: @escaping (QuerySnapshot?) -> ()) {
-        let userId = Utils().loadFromUserDefaults(key: "userIdentifier") as? String ?? ""
-        if userId != ""{
-            self.db.collection(userId).getDocuments { (querySnapshot, error) in
-                if let error = error {
-                        print("Error getting documents: \(error)")
-                    } else {
-                        for document in querySnapshot!.documents {
-                            print("\(document.documentID) => \(document.data())")
-                        }
-                        completion(querySnapshot)
-                    }
+        let userId = Utils().loadFromUserDefaults(key: "userId") as! String
+        self.db.collection(userId).getDocuments { (querySnapshot, error) in
+            if let error = error {
+                print("Error getting documents: \(error)")
+            } else {
+                for document in querySnapshot!.documents {
+                    print("\(document.documentID) => \(document.data())")
+                }
+                completion(querySnapshot)
             }
         }
     }
     
     func createGalleryDB(vc: UIViewController, name: String, gender: String, date: String, info: [UIImagePickerController.InfoKey : Any], completion: @escaping () -> ()) {
-        guard let userId = Utils().loadFromUserDefaults(key: "userIdentifier") as? String else { return }
+        let userId = Utils().loadFromUserDefaults(key: "userId") as! String
         let userRef = storage.reference().child(userId)
         guard let imageURL = info[.imageURL] as? URL else { return }
         let imageName = imageURL.lastPathComponent
@@ -156,21 +173,20 @@ class Network: NSObject {
                         "gender": gender,
                         "date": date,
                         "downLoadUrls": [url]]) { error in
-                        if let err = error {
-                            print("CategoryInfoDB- Daily create Error: \(err)")
-                        } else {
-                            print("CategoryInfoDB- Daily create")
+                            if let err = error {
+                                print("CategoryInfoDB- Daily create Error: \(err)")
+                            } else {
+                                print("CategoryInfoDB- Daily create")
+                                completion()
+                            }
                         }
-                    }
                 }
             }
         }
-        
-        
     }
     
     func loadIsMain(vc: UIViewController, completion: @escaping () -> ()) {
-        guard let userId = Utils().loadFromUserDefaults(key: "userIdentifier") as? String else { return }
+        let userId = Utils().loadFromUserDefaults(key: "userId") as! String
         self.db.collection(userId).getDocuments { (querySnapshot, error) in
             if let error = error {
                 print("Error getting documents: \(error)")
@@ -186,9 +202,9 @@ class Network: NSObject {
             }
         }
     }
-
+    
     func uploadImage(filePath: String, info: [UIImagePickerController.InfoKey : Any], completion: @escaping (URL) -> ()) {
-        let userId = Utils().loadFromUserDefaults(key: "userIdentifier") as? String ?? ""
+        let userId = Utils().loadFromUserDefaults(key: "userId") as? String ?? ""
         let userRef = storage.reference().child(userId)
         guard let imageURL = info[.imageURL] as? URL else { return }
         let imageName = imageURL.lastPathComponent
@@ -205,7 +221,7 @@ class Network: NSObject {
     }
     
     func downloadURL(pathName: String, completion: @escaping ([String]) -> ()) {
-        let userId = Utils().loadFromUserDefaults(key: "userIdentifier") as? String ?? ""
+        let userId = Utils().loadFromUserDefaults(key: "userId") as? String ?? ""
         let pathRef = storage.reference().child("\(userId)/\(pathName)")
         var urlArr = [String]()
         pathRef.listAll { (result, error) in
@@ -239,18 +255,18 @@ class Network: NSObject {
      let db = Firestore.firestore()
      let collectionRef = db.collection("my   Collection")
      let docRef = collectionRef.document("doc1")
-
+     
      docRef.getDocument { (documentSnapshot, error) in
-         if let error = error {
-             print("Error getting document: \(error)")
-         } else if let documentSnapshot = documentSnapshot, documentSnapshot.exists {
-             let userInfo = documentSnapshot.data()?["userInfo"] as? [String: Any] ?? [:]
-             let name = userInfo["name"] as? String ?? ""
-             // name 필드 데이터 출력
-             print("Name: \(name)")
-         } else {
-             print("Document does not exist")
-         }
+     if let error = error {
+     print("Error getting document: \(error)")
+     } else if let documentSnapshot = documentSnapshot, documentSnapshot.exists {
+     let userInfo = documentSnapshot.data()?["userInfo"] as? [String: Any] ?? [:]
+     let name = userInfo["name"] as? String ?? ""
+     // name 필드 데이터 출력
+     print("Name: \(name)")
+     } else {
+     print("Document does not exist")
+     }
      }
      */
 }

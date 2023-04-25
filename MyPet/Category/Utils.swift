@@ -4,7 +4,20 @@
 //
 //  Created by shoh on 2023/03/13.
 //
+/*
+ saveToUserDefaults List
+ -> 전면 수정 -> 하단 값은 firebase에서 받아오는걸로 변경
+ -> 설정에 관련된 정보만 저장 하는 방식으로 변경하자
+ 1. userID = userIdentifier -> 필요
+ 2. isFirst = 최초 로그인 여부 체크
+ 3. email = 로그인Email
+ 4. userName = 로그인userName
+ */
 
+/*
+ document name
+ 1. BasicInfo -> isFirst 및 로그인 회원 정보 저장
+ */
 import UIKit
 import AuthenticationServices
 import FirebaseAuth
@@ -56,23 +69,35 @@ class Utils: NSObject {
                     remainingLength -= 1
                 }
             }
-        }        
+        }
         return result
     }
     
-    func introVCDidFinish(result: Bool, vc: UIViewController) {
-        if result {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let viewController = storyboard.instantiateViewController(withIdentifier: "HomeSecondVC") as! HomeSecondVC
-            viewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
-            viewController.modalPresentationStyle = .fullScreen
-            vc.present(viewController, animated: true)
-        } else {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let viewController = storyboard.instantiateViewController(withIdentifier: "InitVC")
-            viewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
-            viewController.modalPresentationStyle = .fullScreen
-            vc.present(viewController, animated: true)
+    func introVCDidFinish(result: String, vc: UIViewController) {
+        if result == "true" {
+            DispatchQueue.main.async {
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let viewController = storyboard.instantiateViewController(withIdentifier: "HomeSecondVC") as! HomeSecondVC
+                viewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+                viewController.modalPresentationStyle = .fullScreen
+                vc.present(viewController, animated: true)
+            }
+        } else if result == "false" {
+            DispatchQueue.main.async {
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let viewController = storyboard.instantiateViewController(withIdentifier: "GalleryInitVC") as! GalleryInitVC
+                viewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+                viewController.modalPresentationStyle = .fullScreen
+                vc.present(viewController, animated: true)
+            }
+        } else if result == "Not" {
+            DispatchQueue.main.async {
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let viewController = storyboard.instantiateViewController(withIdentifier: "InitVC")
+                viewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+                viewController.modalPresentationStyle = .fullScreen
+                vc.present(viewController, animated: true)
+            }
         }
     }
 }
