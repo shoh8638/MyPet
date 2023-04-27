@@ -65,8 +65,7 @@ class GalleryInitVC: UIViewController,UIImagePickerControllerDelegate, UINavigat
         guard let name = self.nameText.text else { return }
         guard let gender = self.genderText.text else { return }
         guard let date = self.dateText.text else { return }
-        Network().createGalleryDB(vc: self, name: name, gender: gender, date: date, info: self.imginfo) {
-            //isFirst에 대한 값을 수정해야됨
+        Network().createGalleryDB(name: name, gender: gender, date: date, info: self.imginfo) {
             Utils().introVCDidFinish(result: "true", vc: self)
         }
     }

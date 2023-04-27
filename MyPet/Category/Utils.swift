@@ -27,6 +27,20 @@ import ProgressHUD
 class Utils: NSObject {
     let db = Firestore.firestore()
     
+    func stringFromDate(date: Date) -> String{
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "ko_KR")
+        return dateFormatter.string(from: date)
+    }
+    
+    func nextMainFullVC(name: String) -> UIViewController {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: name)
+        viewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        viewController.modalPresentationStyle = .fullScreen
+        return viewController
+    }
+    
     func saveToUserDefaults(value: Any, key: String) {
         let userDefault = UserDefaults.standard
         userDefault.set(value, forKey: key)
@@ -77,7 +91,7 @@ class Utils: NSObject {
         if result == "true" {
             DispatchQueue.main.async {
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let viewController = storyboard.instantiateViewController(withIdentifier: "HomeSecondVC") as! HomeSecondVC
+                let viewController = storyboard.instantiateViewController(withIdentifier: "HomeSecondVC")
                 viewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
                 viewController.modalPresentationStyle = .fullScreen
                 vc.present(viewController, animated: true)

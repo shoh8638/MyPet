@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class HomeSecondVC: UIViewController {
     
@@ -14,11 +15,20 @@ class HomeSecondVC: UIViewController {
     var galleryKeyList: [String]!
     var galleryList: [[String : Any]]!
     var untilDate: [[String : Any]]!
+    var galleryImgUrl: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        self.registerForCollectionView()
         self.configuration()
+    }
+    
+    func configuration() {
+        Network().loadIsGalleryKey { data in
+            print("HomeVC :\(data)")
+            self.galleryImgUrl = data["downLoadUrls"] as? String ?? ""
+            //FoodInfo 관련하여 정보 가져오기
+            self.registerForCollectionView()
+        }
     }
     
     func registerForCollectionView() {
@@ -27,12 +37,6 @@ class HomeSecondVC: UIViewController {
         self.collectionView.register(UINib(nibName: "HeadCell", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeadCell")
         self.collectionView.register(UINib(nibName: "HomeMainCell", bundle: nil), forCellWithReuseIdentifier: "HomeMainCell")
         self.collectionView.register(UINib(nibName: "HomeSubCell", bundle: nil), forCellWithReuseIdentifier: "HomeSubCell")
-    }
-    
-    func configuration() {
-        Network().loadIsGalleryKey { data in
-            print("HomeVC :\(data)")       
-        }
     }
 }
 
@@ -55,6 +59,15 @@ extension HomeSecondVC: UICollectionViewDelegate, UICollectionViewDataSource , U
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeMainCell", for: indexPath) as? HomeMainCell else {
                 return UICollectionViewCell()
             }
+            if self.galleryImgUrl != nil {
+                cell.mainImg.sd_setImage(with: URL(string: self.galleryImgUrl), placeholderImage: nil, options: []) { (image, error, cacheType, url) in
+                    if let error = error {
+                        print("Error downloading image: \(error.localizedDescription)")
+                    } else {
+                        print("Image downloaded successfully!")
+                    }
+                }
+            }
             cell.goGallery.addTarget(self, action: #selector(tapGoGallery(_ :)), for: .touchUpInside)
             return cell
         } else {
@@ -76,9 +89,9 @@ extension HomeSecondVC: UICollectionViewDelegate, UICollectionViewDataSource , U
     }
     
     @objc func tapGoGallery(_ sender: UIButton) {
-          print("tap go")
-          //GalleryView로 넘어가 사진들이 쭉 보이고 마지막 한개는 추가 셀로 버튼을 누르면 갤러리가 나오고 사진 선택 시, 서버에 저장 및 reload하여 셀 다시 수정
-      }
+        print("tap go")
+        //GalleryView로 넘어가 사진들이 쭉 보이고 마지막 한개는 추가 셀로 버튼을 누르면 갤러리가 나오고 사진 선택 시, 서버에 저장 및 reload하여 셀 다시 수정
+    }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {

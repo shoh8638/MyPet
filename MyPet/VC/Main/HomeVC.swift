@@ -34,9 +34,6 @@ class HomeVC: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
     override func viewDidLoad() {
         super.viewDidLoad()
         self.prepareData() {
-            Network().downloadURL(pathName: "ImageList") { urlArr in
-                self.urlArr = urlArr
-            }
         }
     }
     
@@ -46,7 +43,7 @@ class HomeVC: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
        let dateFormatter = DateFormatter()
        dateFormatter.dateFormat = "yyyy-MM-dd"
        dateFormatter.locale = Locale(identifier: "ko_KR")
-       Network().loadDocumentData(vc: self) { quetysnapshot in
+       Network().loadDocumentData { quetysnapshot in
             for document in quetysnapshot!.documents {
                 if document.documentID == "ImgInfo" {
                 //해당 field -> field안에 key값을 가지고 처리
@@ -193,9 +190,9 @@ class HomeVC: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        Network().uploadImage(filePath: "ImageList", info: info) { url in
-            let a = url.absoluteString
-        }
+//        Network().uploadImage(filePath: "ImageList", info: info) { url in
+//            let a = url.absoluteString
+//        }
         picker.dismiss(animated: true)
     }
 }
