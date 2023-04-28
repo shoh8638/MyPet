@@ -7,6 +7,7 @@
 
 import UIKit
 import SDWebImage
+import ProgressHUD
 
 class HomeSecondVC: UIViewController {
     
@@ -16,6 +17,7 @@ class HomeSecondVC: UIViewController {
     var galleryList: [[String : Any]]!
     var untilDate: [[String : Any]]!
     var galleryImgUrl: String!
+    var foodInfoList: [String: Any]!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,11 +25,22 @@ class HomeSecondVC: UIViewController {
     }
     
     func configuration() {
+        ProgressHUD.show("로딩중...")
         Network().loadIsGalleryKey { data in
             print("HomeVC :\(data)")
             self.galleryImgUrl = data["downLoadUrls"] as? String ?? ""
-            //FoodInfo 관련하여 정보 가져오기
-            self.registerForCollectionView()
+            Network().loadIsFoodInfo { data in
+                ProgressHUD.remove()
+                self.foodInfoList = data
+                if data as? [String: String] == ["": ""] {
+                    //foodinfo가 없을 때,
+                } else {
+                    //foodinfo가 있을 때, 최대 5개까지 노출
+                    //헤더뷰 버튼은 더보기 눌러 foodInfo 전체가 보이게끔
+                    //GalleryDB와 같은 VC 사용(재사용)
+                    self.registerForCollectionView()
+                }
+            }
         }
     }
     

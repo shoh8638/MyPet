@@ -216,6 +216,22 @@ class Network: NSObject {
         })
     }
     
+    func loadIsFoodInfo(completion: @escaping ([String: Any]) -> ()) {
+        guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else { return }
+        self.db.collection(userId).document("FoodInfo").getDocument { (document, error) in
+            if let err = error {
+                print("Error load FoodInfo List: \(err)")
+            } else {
+                if let document = document, document.exists {
+                    guard let data = document.data() else { return }
+                    completion(data)
+                } else {
+                    completion(["": ""])
+                }
+            }
+        }
+    }
+    
     func loadIsGalleryDB(keys: [String], completion: @escaping ([String: Any]) -> ()) {
         guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else { return }
         for i in keys {
