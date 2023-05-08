@@ -9,15 +9,17 @@ import UIKit
 import SDWebImage
 import ProgressHUD
 
-class HomeSecondVC: UIViewController {
-    
+protocol ReloadMainImg {
+    func reloadMain()
+}
+
+class HomeSecondVC: UIViewController, ReloadMainImg {
     @IBOutlet weak var collectionView: UICollectionView!
     
-    var galleryKeyList: [String]!
-    var galleryList: [[String : Any]]!
-    var untilDate: [[String : Any]]!
     var galleryImgUrl: String!
+    var galleryKeys: [String]!
     var foodInfoList: [String: Any]!
+    let refreshControll = UIRefreshControl()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,20 +28,18 @@ class HomeSecondVC: UIViewController {
     
     func configuration() {
         ProgressHUD.show("로딩중...")
-        Network().loadIsGalleryKey { data in
+        Network().loadIsGalleryKey { keys, data in
             print("HomeVC :\(data)")
             self.galleryImgUrl = data["downLoadUrls"] as? String ?? ""
+            self.galleryKeys = keys
             Network().loadIsFoodInfo { data in
                 ProgressHUD.remove()
-                self.foodInfoList = data
                 if data as? [String: String] == ["": ""] {
-                    //foodinfo가 없을 때,
+                    self.foodInfoList = ["key": "empty"]
                 } else {
-                    //foodinfo가 있을 때, 최대 5개까지 노출
-                    //헤더뷰 버튼은 더보기 눌러 foodInfo 전체가 보이게끔
-                    //GalleryDB와 같은 VC 사용(재사용)
-                    self.registerForCollectionView()
+                    self.foodInfoList = data
                 }
+                self.registerForCollectionView()
             }
         }
     }
@@ -50,7 +50,42 @@ class HomeSecondVC: UIViewController {
         self.collectionView.register(UINib(nibName: "HeadCell", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeadCell")
         self.collectionView.register(UINib(nibName: "HomeMainCell", bundle: nil), forCellWithReuseIdentifier: "HomeMainCell")
         self.collectionView.register(UINib(nibName: "HomeSubCell", bundle: nil), forCellWithReuseIdentifier: "HomeSubCell")
+        refreshControll.addTarget(self, action: #selector(self.reloadMainView), for: .valueChanged)
+        self.collectionView.refreshControl = refreshControll
     }
+    
+    @objc func tapGoGallery(_ sender: UIButton) {
+        print("tap go")
+        //GalleryView로 넘어가 사진들이 쭉 보이고 마지막 한개는 추가 셀로 버튼을 누르면 갤러리가 나오고 사진 선택 시, 서버에 저장 및 reload하여 셀 다시 수정
+        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "GalleryVC") as! GalleryVC
+        vc.imgKey = self.galleryKeys
+        vc.delegate = self
+        self.present(vc, animated: true)
+    }
+    
+    @objc func reloadMainView() {
+        ProgressHUD.show("로딩중...")
+        Network().loadIsGalleryKey { keys, data in
+            print("HomeVC :\(data)")
+            self.galleryImgUrl = data["downLoadUrls"] as? String ?? ""
+            self.galleryKeys = keys
+            Network().loadIsFoodInfo { data in
+                ProgressHUD.remove()
+                if data as? [String: String] == ["": ""] {
+                    self.foodInfoList = ["key": "empty"]
+                } else {
+                    self.foodInfoList = data
+                }
+                self.collectionView.reloadData()
+                self.refreshControll.endRefreshing()
+            }
+        }
+    }
+    
+    func reloadMain() {
+        self.reloadMainView()
+    }
+    
 }
 
 extension HomeSecondVC: UICollectionViewDelegate, UICollectionViewDataSource , UICollectionViewDelegateFlowLayout {
@@ -62,7 +97,7 @@ extension HomeSecondVC: UICollectionViewDelegate, UICollectionViewDataSource , U
         if section == 0 {
             return 1
         } else if section == 1{
-            return 5
+            return  self.foodInfoList["key"] as! String == "empty" ? 1 : 5
         }
         return 0
     }
@@ -73,21 +108,28 @@ extension HomeSecondVC: UICollectionViewDelegate, UICollectionViewDataSource , U
                 return UICollectionViewCell()
             }
             if self.galleryImgUrl != nil {
-                cell.mainImg.sd_setImage(with: URL(string: self.galleryImgUrl), placeholderImage: nil, options: []) { (image, error, cacheType, url) in
-                    if let error = error {
-                        print("Error downloading image: \(error.localizedDescription)")
-                    } else {
-                        print("Image downloaded successfully!")
-                    }
-                }
+                cell.mainImg.clipsToBounds = true
+                cell.mainImg.sd_setImage(with: URL(string: self.galleryImgUrl))
+                cell.mainImg.sd_setImage(with: URL(string: self.galleryImgUrl))
             }
             cell.goGallery.addTarget(self, action: #selector(tapGoGallery(_ :)), for: .touchUpInside)
             return cell
-        } else {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeSubCell", for: indexPath) as? HomeSubCell else {
-                return UICollectionViewCell()
+        } else if indexPath.section == 1{
+            if self.foodInfoList["key"] as! String == "empty" {
+                guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeSubCell", for: indexPath) as? HomeSubCell else {
+                    return UICollectionViewCell()
+                }
+                cell.dateTitle.text = "아무것도 없어용"
+                return cell
+            } else {
+                guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeSubCell", for: indexPath) as? HomeSubCell else {
+                    return UICollectionViewCell()
+                }
+                cell.dateTitle.text = "몬가가 있네용"
+                return cell
             }
-            return cell
+        } else {
+            return UICollectionViewCell()
         }
     }
     
@@ -101,22 +143,17 @@ extension HomeSecondVC: UICollectionViewDelegate, UICollectionViewDataSource , U
         }
     }
     
-    @objc func tapGoGallery(_ sender: UIButton) {
-        print("tap go")
-        //GalleryView로 넘어가 사진들이 쭉 보이고 마지막 한개는 추가 셀로 버튼을 누르면 갤러리가 나오고 사진 선택 시, 서버에 저장 및 reload하여 셀 다시 수정
-    }
-    
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {
               if indexPath.section == 0 {
                   guard let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "HeadCell", for: indexPath) as? HeadCell else { return UICollectionReusableView() }
                   headerView.headTitle.text = "main"
+                  headerView.btn.isHidden = true
                   headerView.divide.isHidden = true
                   return headerView
               } else if indexPath.section == 1 {
                   guard let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "HeadCell", for: indexPath) as? HeadCell else { return UICollectionReusableView() }
                   headerView.headTitle.text = "sub"
-                  headerView.btn.isHidden = true
                   headerView.divide.isHidden = false
                   return headerView
               }

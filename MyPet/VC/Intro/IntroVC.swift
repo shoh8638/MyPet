@@ -23,10 +23,12 @@ class IntroVC: UIViewController {
         ProgressHUD.show("로딩중...")
         Network().introVCCheckAuth { result in
             if result == "true" || result == "fasle" {
+                ProgressHUD.remove()
                 Network().isFirstTrueOrFalseDB { result in
                     Utils().introVCDidFinish(result: result, vc: self)
                 }
             } else if result == "Not" {
+                ProgressHUD.remove()
                 Utils().introVCDidFinish(result: result, vc: self)
             }
         }

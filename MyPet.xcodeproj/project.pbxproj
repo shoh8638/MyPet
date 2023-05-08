@@ -43,6 +43,9 @@
 		E68679C029F11A6E007EB4CF /* GalleryInitVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68679BF29F11A6E007EB4CF /* GalleryInitVC.swift */; };
 		E68A3FD929BEF94A006AFFC6 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68A3FD829BEF94A006AFFC6 /* Utils.swift */; };
 		E68A3FDB29C04F5E006AFFC6 /* Intro.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E68A3FDA29C04F5E006AFFC6 /* Intro.storyboard */; };
+		E6D9C0D82A0885F60093550E /* GalleryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6D9C0D72A0885F60093550E /* GalleryVC.swift */; };
+		E6D9C0DC2A08B8C00093550E /* GalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6D9C0DA2A08B8C00093550E /* GalleryCell.swift */; };
+		E6D9C0DD2A08B8C00093550E /* GalleryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = E6D9C0DB2A08B8C00093550E /* GalleryCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,6 +111,9 @@
 		E68679BF29F11A6E007EB4CF /* GalleryInitVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryInitVC.swift; sourceTree = "<group>"; };
 		E68A3FD829BEF94A006AFFC6 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		E68A3FDA29C04F5E006AFFC6 /* Intro.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Intro.storyboard; sourceTree = "<group>"; };
+		E6D9C0D72A0885F60093550E /* GalleryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryVC.swift; sourceTree = "<group>"; };
+		E6D9C0DA2A08B8C00093550E /* GalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryCell.swift; sourceTree = "<group>"; };
+		E6D9C0DB2A08B8C00093550E /* GalleryCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GalleryCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -240,6 +246,7 @@
 		E610827129BC4BD000DAD1D4 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
+				E6D9C0D92A08B89A0093550E /* GalleryCell */,
 				E68679BE29EFB627007EB4CF /* HomeSubCell */,
 				E68679B729ED3560007EB4CF /* HomeMainCell */,
 				E68679B629ED3506007EB4CF /* HeadCell */,
@@ -313,8 +320,18 @@
 				E610826A29BC4A3900DAD1D4 /* CalVC.swift */,
 				E610826C29BC4A4200DAD1D4 /* SetVC.swift */,
 				E68679B829EFA6CA007EB4CF /* HomeSecondVC.swift */,
+				E6D9C0D72A0885F60093550E /* GalleryVC.swift */,
 			);
 			path = Main;
+			sourceTree = "<group>";
+		};
+		E6D9C0D92A08B89A0093550E /* GalleryCell */ = {
+			isa = PBXGroup;
+			children = (
+				E6D9C0DA2A08B8C00093550E /* GalleryCell.swift */,
+				E6D9C0DB2A08B8C00093550E /* GalleryCell.xib */,
+			);
+			path = GalleryCell;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -427,6 +444,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E610824429BC467500DAD1D4 /* LaunchScreen.storyboard in Resources */,
+				E6D9C0DD2A08B8C00093550E /* GalleryCell.xib in Resources */,
 				E610824129BC467500DAD1D4 /* Assets.xcassets in Resources */,
 				E6007B5129BEE35A008E2FE2 /* GoogleService-Info.plist in Resources */,
 				E68679BD29EFB5E8007EB4CF /* HomeSubCell.xib in Resources */,
@@ -565,6 +583,7 @@
 			files = (
 				E610826929BC4A2E00DAD1D4 /* ListVC.swift in Sources */,
 				E68679B929EFA6CA007EB4CF /* HomeSecondVC.swift in Sources */,
+				E6D9C0DC2A08B8C00093550E /* GalleryCell.swift in Sources */,
 				E649E36229C158F200565CEF /* Data.swift in Sources */,
 				E68679C029F11A6E007EB4CF /* GalleryInitVC.swift in Sources */,
 				E610827929BC534800DAD1D4 /* InitVC.swift in Sources */,
@@ -582,6 +601,7 @@
 				E610823829BC467500DAD1D4 /* AppDelegate.swift in Sources */,
 				E649E36029C158E500565CEF /* Network.swift in Sources */,
 				E649E36529C1598800565CEF /* Alert.swift in Sources */,
+				E6D9C0D82A0885F60093550E /* GalleryVC.swift in Sources */,
 				E610823A29BC467500DAD1D4 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -55,18 +55,18 @@
             </objects>
             <point key="canvasLocation" x="-48" y="5"/>
         </scene>
-        <!--View Controller-->
+        <!--GalleryVC-->
         <scene sceneID="EXD-TM-RcY">
             <objects>
-                <viewController id="3NL-bE-8qq" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="GalleryVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="3NL-bE-8qq" customClass="GalleryVC" customModule="MyPet" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="jdN-Hy-hVe">
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="0ld-Oc-Jnw">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="0ld-Oc-Jnw">
                                 <rect key="frame" x="0.0" y="47" width="390" height="763"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="bqZ-yt-wLM">
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="bqZ-yt-wLM">
                                     <size key="itemSize" width="128" height="128"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
@@ -94,6 +94,9 @@
                             <constraint firstItem="0ld-Oc-Jnw" firstAttribute="top" secondItem="6Dm-9F-cuv" secondAttribute="top" id="E1R-eO-dE7"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="collectionView" destination="0ld-Oc-Jnw" id="82U-Ml-2IT"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tHV-BH-WsA" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>

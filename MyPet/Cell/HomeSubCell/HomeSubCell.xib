@@ -54,6 +54,9 @@
                 <constraint firstAttribute="bottom" secondItem="9Yt-oi-VH9" secondAttribute="bottom" id="bBX-TS-4sB"/>
             </constraints>
             <size key="customSize" width="197" height="112"/>
+            <connections>
+                <outlet property="dateTitle" destination="qTa-Zh-uhD" id="x3y-NB-4vB"/>
+            </connections>
             <point key="canvasLocation" x="151.90839694656489" y="42.253521126760567"/>
         </collectionViewCell>
     </objects>

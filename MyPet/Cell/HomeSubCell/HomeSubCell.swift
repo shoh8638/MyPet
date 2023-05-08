@@ -10,6 +10,8 @@ import UIKit
 @IBDesignable
 class HomeSubCell: UICollectionViewCell {
 
+    @IBOutlet weak var dateTitle: UILabel!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

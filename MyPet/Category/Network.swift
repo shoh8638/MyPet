@@ -197,7 +197,7 @@ class Network: NSObject {
         }
     }
     
-    func loadIsGalleryKey(completion: @escaping ([String: Any]) -> ()) {
+    func loadIsGalleryKey(completion: @escaping ([String], [String: Any]) -> ()) {
         guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else { return }
         self.db.collection(userId).document("GalleryDBKey").getDocument(completion: { (document, error) in
             if let err = error {
@@ -206,8 +206,8 @@ class Network: NSObject {
                 if let document = document, document.exists {
                     guard let data = document.data() else { return }
                     guard let keys = data["Key"] as? [String] else { return }
-                    self.loadIsGalleryDB(keys: keys) { data in
-                        completion(data)
+                    self.loadIsMainGalleryDB(keys: keys) { keys, data in
+                        completion(keys, data)
                     }
                 } else {
                     print("Document does not exist")
@@ -232,29 +232,55 @@ class Network: NSObject {
         }
     }
     
-    func loadIsGalleryDB(keys: [String], completion: @escaping ([String: Any]) -> ()) {
+    func loadIsMainGalleryDB(keys: [String], completion: @escaping ([String], [String: Any]) -> ()) {
         guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else { return }
         for i in keys {
             self.db.collection(userId).document("GalleryDB").collection(i).whereField("isMain", isEqualTo: true).getDocuments { (querySnapshot, error) in
                 if let error = error {
+                    print("Error fetching documents: \(error)")
+                } else {
+                    guard let documents = querySnapshot?.documents else {
+                        print("No documents found")
+                        return
+                    }
+                    for document in documents {
+                        let data = document.data()
+                        let isMain = data["isMain"] as? Bool ?? false
+                        let url = data["downLoadUrls"] as? String ?? ""
+                        if isMain {
+                            print("Document with isMain = true: \(data)")
+                            print("Document with isMain = true: \(url)")
+                            completion(keys, data)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func loadIsGalleryDB(keys: [String], completion: @escaping ([String]) -> ()) {
+        guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else { return }
+        for i in keys {
+            self.db.collection(userId).document("GalleryDB").collection(i)
+                .getDocuments { (querySnapshot, error) in
+                    if let error = error {
                         print("Error fetching documents: \(error)")
                     } else {
                         guard let documents = querySnapshot?.documents else {
                             print("No documents found")
                             return
                         }
+                        var urlList = [String]()
                         for document in documents {
                             let data = document.data()
-                            let isMain = data["isMain"] as? Bool ?? false
                             let url = data["downLoadUrls"] as? String ?? ""
-                            if isMain {
-                                print("Document with isMain = true: \(data)")
-                                print("Document with isMain = true: \(url)")
-                                completion(data)
-                            }
+                            urlList.append(url)
+                        }
+                        if (keys.count == urlList.count) {
+                            completion(urlList)
                         }
                     }
-            }
+                }
         }
     }
 }
