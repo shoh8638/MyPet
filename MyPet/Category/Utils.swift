@@ -30,6 +30,7 @@ class Utils: NSObject {
     func stringFromDate(date: Date) -> String{
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "ko_KR")
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         return dateFormatter.string(from: date)
     }
     

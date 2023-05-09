@@ -17,7 +17,6 @@ class HomeSecondVC: UIViewController, ReloadMainImg {
     @IBOutlet weak var collectionView: UICollectionView!
     
     var galleryImgUrl: String!
-    var galleryKeys: [String]!
     var foodInfoList: [String: Any]!
     let refreshControll = UIRefreshControl()
     
@@ -31,7 +30,6 @@ class HomeSecondVC: UIViewController, ReloadMainImg {
         Network().loadIsGalleryKey { keys, data in
             print("HomeVC :\(data)")
             self.galleryImgUrl = data["downLoadUrls"] as? String ?? ""
-            self.galleryKeys = keys
             Network().loadIsFoodInfo { data in
                 ProgressHUD.remove()
                 if data as? [String: String] == ["": ""] {
@@ -57,10 +55,12 @@ class HomeSecondVC: UIViewController, ReloadMainImg {
     @objc func tapGoGallery(_ sender: UIButton) {
         print("tap go")
         //GalleryView로 넘어가 사진들이 쭉 보이고 마지막 한개는 추가 셀로 버튼을 누르면 갤러리가 나오고 사진 선택 시, 서버에 저장 및 reload하여 셀 다시 수정
-        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "GalleryVC") as! GalleryVC
-        vc.imgKey = self.galleryKeys
-        vc.delegate = self
-        self.present(vc, animated: true)
+        Network().loadGalleyKey { key in
+            let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "GalleryVC") as! GalleryVC
+            vc.imgKey = key
+            vc.delegate = self
+            self.present(vc, animated: true)
+        }
     }
     
     @objc func reloadMainView() {
@@ -68,7 +68,6 @@ class HomeSecondVC: UIViewController, ReloadMainImg {
         Network().loadIsGalleryKey { keys, data in
             print("HomeVC :\(data)")
             self.galleryImgUrl = data["downLoadUrls"] as? String ?? ""
-            self.galleryKeys = keys
             Network().loadIsFoodInfo { data in
                 ProgressHUD.remove()
                 if data as? [String: String] == ["": ""] {
@@ -83,7 +82,20 @@ class HomeSecondVC: UIViewController, ReloadMainImg {
     }
     
     func reloadMain() {
-        self.reloadMainView()
+        ProgressHUD.show("로딩중...")
+        Network().loadIsGalleryKey { keys, data in
+            print("HomeVC :\(data)")
+            self.galleryImgUrl = data["downLoadUrls"] as? String ?? ""
+            Network().loadIsFoodInfo { data in
+                ProgressHUD.remove()
+                if data as? [String: String] == ["": ""] {
+                    self.foodInfoList = ["key": "empty"]
+                } else {
+                    self.foodInfoList = data
+                }
+                self.collectionView.reloadData()
+            }
+        }
     }
     
 }

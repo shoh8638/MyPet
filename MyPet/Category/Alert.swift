@@ -25,8 +25,17 @@ class Alert: NSObject {
     
     func backAlert(messgae: String, vc: UIViewController) {
         let alert = UIAlertController(title: "알림", message: messgae, preferredStyle: .alert)
+        let action = UIAlertAction(title: "확인", style: .cancel)
+        alert.addAction(action)
+        vc.present(alert, animated: true)
+    }
+    
+    func okAlert(message: String, vc: UIViewController, completion: @escaping () -> ()) {
+        let alert = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
         let action = UIAlertAction(title: "확인", style: .cancel) {_ in
-            vc.dismiss(animated: true)
+            vc.dismiss(animated: true) {
+                completion()
+            }
         }
         alert.addAction(action)
         vc.present(alert, animated: true)

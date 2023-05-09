@@ -77,6 +77,8 @@ class Network: NSObject {
                 "userIdentifier": userIdentifier,
                 "userName": userName,
                 "email": email,
+                "name": "",
+                "gender": "",
                 "isFirst": false
             ]){ error in
                 if let err = error {
@@ -107,21 +109,21 @@ class Network: NSObject {
             if let err = error {
                 print("DB create Error: \(err)")
             } else {
-                self.db.collection(userId).document("CategoryInfoDB").collection("Food").document().setData([:]) { error in
+                self.db.collection(userId).document("CategoryInfoDB").collection("Food").document("Food").setData([:]) { error in
                     if let err = error {
                         print("CategoryInfoDB- Food create Error: \(err)")
                     } else {
                         print("CategoryInfoDB- Food create")
                     }
                 }
-                self.db.collection(userId).document("CategoryInfoDB").collection("Trip").document().setData([:]) { error in
+                self.db.collection(userId).document("CategoryInfoDB").collection("Trip").document("Trip").setData([:]) { error in
                     if let err = error {
                         print("CategoryInfoDB- Trip create Error: \(err)")
                     } else {
                         print("CategoryInfoDB- Trip create")
                     }
                 }
-                self.db.collection(userId).document("CategoryInfoDB").collection("Daily").document().setData([:]) { error in
+                self.db.collection(userId).document("CategoryInfoDB").collection("Daily").document("Daily").setData([:]) { error in
                     if let err = error {
                         print("CategoryInfoDB- Daily create Error: \(err)")
                     } else {
@@ -147,6 +149,55 @@ class Network: NSObject {
         }
     }
     
+    func uploadGalleryDB(info: [UIImagePickerController.InfoKey: Any], completion: @escaping () -> ()) {
+        let userId = Utils().loadFromUserDefaults(key: "userId") as! String
+        let userRef = storage.reference().child(userId)
+        guard let imageURL = info[.imageURL] as? URL else { return }
+        let imageName = imageURL.lastPathComponent
+        let pathRef = userRef.child("Gallery").child(imageName)
+        guard let imageData = try? Data(contentsOf: imageURL) else { return }
+        
+        pathRef.putData(imageData) { (metadata, error) in
+            guard error == nil else { return }
+            pathRef.downloadURL { (url, error) in
+                if let error = error {
+                    print("Error uploading image to Firebase Storage: \(error.localizedDescription)")
+                } else {
+                    guard let url = url else { return }
+                    let urlString = url.absoluteString
+                    let current = Utils().stringFromDate(date: Date())
+                    self.db.collection(userId).document("GalleryDB").collection(current).document(current).setData([
+                        "date": current,
+                        "isMain": false,
+                        "downLoadUrls": urlString
+                    ]) { error in
+                        if let err = error {
+                            print("GalleryDB create Error: \(err)")
+                        } else {
+                            print("GalleryDB create")
+                        }
+                    }
+                    self.db.collection(userId).document("GalleryDBKey").getDocument { (document, error) in
+                        if let document = document, document.exists {
+                            var galleryKeyArray = document.get("Key") as? [String] ?? []
+                            galleryKeyArray.append(current)
+                            
+                            self.db.collection(userId).document("GalleryDBKey").updateData(["Key": galleryKeyArray]){ error in
+                                if let err = error {
+                                    print("return err:\(err)")
+                                } else {
+                                    print("Success KeyDB")
+                                    completion()
+                                }
+                            }
+                        }
+                    }
+                    
+                }
+            }
+        }
+    }
+    
     func createGalleryDB(name: String, gender: String, date: String, info: [UIImagePickerController.InfoKey : Any], completion: @escaping () -> ()) {
         let userId = Utils().loadFromUserDefaults(key: "userId") as! String
         let userRef = storage.reference().child(userId)
@@ -165,9 +216,7 @@ class Network: NSObject {
                     
                     let urlString = url.absoluteString
                     let current = Utils().stringFromDate(date: Date())
-                    self.db.collection(userId).document("GalleryDB").collection(current).document().setData([
-                        "name": name,
-                        "gender": gender,
+                    self.db.collection(userId).document("GalleryDB").collection(current).document(current).setData([
                         "date": date,
                         "isMain": true,
                         "downLoadUrls": urlString]) { error in
@@ -184,14 +233,17 @@ class Network: NSObject {
                             print("Success KeyDB")
                         }
                     }
-                    self.db.collection(userId).document("BasicInfo").updateData(["isFirst": true]) { err in
-                        if let err = err {
-                            print("isFirst update Error: \(err)")
-                        } else {
-                            print("isFirst update")
-                            completion()
+                    self.db.collection(userId).document("BasicInfo").updateData([
+                        "isFirst": true,
+                        "gender": gender,
+                        "name": name]) { err in
+                            if let err = err {
+                                print("isFirst update Error: \(err)")
+                            } else {
+                                print("isFirst update")
+                                completion()
+                            }
                         }
-                    }
                 }
             }
         }
@@ -211,6 +263,21 @@ class Network: NSObject {
                     }
                 } else {
                     print("Document does not exist")
+                }
+            }
+        })
+    }
+    
+    func loadGalleyKey(completion: @escaping ([String]) -> ()) {
+        guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else { return }
+        self.db.collection(userId).document("GalleryDBKey").getDocument(completion: { (document, error) in
+            if let err = error {
+                print("Error load Key List: \(err)")
+            } else {
+                if let document = document, document.exists {
+                    guard let data = document.data() else { return }
+                    guard let keys = data["Key"] as? [String] else { return }
+                    completion(keys)
                 }
             }
         })
@@ -260,6 +327,8 @@ class Network: NSObject {
     
     func loadIsGalleryDB(keys: [String], completion: @escaping ([String]) -> ()) {
         guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else { return }
+        var urlList = [String]()
+        let count = keys.count
         for i in keys {
             self.db.collection(userId).document("GalleryDB").collection(i)
                 .getDocuments { (querySnapshot, error) in
@@ -270,17 +339,67 @@ class Network: NSObject {
                             print("No documents found")
                             return
                         }
-                        var urlList = [String]()
                         for document in documents {
                             let data = document.data()
                             let url = data["downLoadUrls"] as? String ?? ""
                             urlList.append(url)
                         }
-                        if (keys.count == urlList.count) {
+                        if (count == urlList.count) {
                             completion(urlList)
                         }
                     }
                 }
+        }
+    }
+    
+    func checkIsMainGalleryDB(key: [String], url: String, completion: @escaping (Bool, [String], String) -> ()) {
+        var keyList = key
+        guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else { return }
+        for i in key {
+            self.db.collection(userId).document("GalleryDB").collection(i).whereField("downLoadUrls", isEqualTo: url).getDocuments { (querySnapshot, error) in
+                if let error = error {
+                    print("Error getting documents: \(error)")
+                } else {
+                    for document in querySnapshot!.documents {
+                        let isMain = document.data()["isMain"] as? Bool ?? false
+                        if let index = keyList.firstIndex(of: i) {
+                            keyList.remove(at: index)
+                        }
+                        completion(isMain, keyList, i)
+                    }
+                }
+            }
+        }
+    }
+    
+    func changeIsMainValue(key: [String], completion: @escaping () -> ()) {
+        guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else { return }
+        for i in key {
+            self.db.collection(userId).document("GalleryDB").collection(i).whereField("isMain", isEqualTo: true).getDocuments { (querySnapshot, error) in
+                guard error == nil else { return }
+                self.db.collection(userId).document("GalleryDB").collection(i).document(i).updateData(["isMain": false]) { err in
+                    guard err == nil else { return }
+                    completion()
+                }
+            }
+        }
+    }
+    
+    func changeIsMainSuccess(key: String, completion: @escaping () -> ()) {
+        guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else { return }
+        self.db.collection(userId).document("GalleryDB").collection(key).document(key).updateData(
+            ["isMain": true]
+        ) { err in
+            guard err == nil else { return }
+            completion()
+        }
+    }
+    
+    func changeMainImage(key: String, completion: @escaping () -> ()) {
+        guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else { return }
+        self.db.collection(userId).document("GalleryDB").collection(key).document(key).updateData(["isMain": true]) { error in
+            guard error == nil else { return }
+            completion()
         }
     }
 }
