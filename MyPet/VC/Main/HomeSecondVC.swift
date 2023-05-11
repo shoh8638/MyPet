@@ -18,6 +18,7 @@ class HomeSecondVC: UIViewController, ReloadMainImg {
     
     var galleryImgUrl: String!
     var foodInfoList: [String: Any]!
+    var basicInfo: [String: Any]!
     let refreshControll = UIRefreshControl()
     
     override func viewDidLoad() {
@@ -27,17 +28,20 @@ class HomeSecondVC: UIViewController, ReloadMainImg {
     
     func configuration() {
         ProgressHUD.show("로딩중...")
-        Network().loadIsGalleryKey { keys, data in
-            print("HomeVC :\(data)")
-            self.galleryImgUrl = data["downLoadUrls"] as? String ?? ""
-            Network().loadIsFoodInfo { data in
-                ProgressHUD.remove()
-                if data as? [String: String] == ["": ""] {
-                    self.foodInfoList = ["key": "empty"]
-                } else {
-                    self.foodInfoList = data
+        Network().loadBasicInfo { info in
+            self.basicInfo = info
+            Network().loadIsGalleryKey { keys, data in
+                print("HomeVC :\(data)")
+                self.galleryImgUrl = data["downLoadUrls"] as? String ?? ""
+                Network().loadIsFoodInfo { data in
+                    ProgressHUD.remove()
+                    if data as? [String: String] == ["": ""] {
+                        self.foodInfoList = ["key": "empty"]
+                    } else {
+                        self.foodInfoList = data
+                    }
+                    self.registerForCollectionView()
                 }
-                self.registerForCollectionView()
             }
         }
     }
@@ -78,6 +82,14 @@ class HomeSecondVC: UIViewController, ReloadMainImg {
                 self.collectionView.reloadData()
                 self.refreshControll.endRefreshing()
             }
+        }
+    }
+    
+    @objc func tapHeadBtn(_ gesture: UITapGestureRecognizer) {
+        Network().loadCategoryList { list in
+            let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "WriteVC") as! WriteVC
+            vc.categoryList = list
+            self.present(vc, animated: true)
         }
     }
     
@@ -159,20 +171,27 @@ extension HomeSecondVC: UICollectionViewDelegate, UICollectionViewDataSource , U
         if kind == UICollectionView.elementKindSectionHeader {
               if indexPath.section == 0 {
                   guard let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "HeadCell", for: indexPath) as? HeadCell else { return UICollectionReusableView() }
-                  headerView.headTitle.text = "main"
+                  headerView.headTitle.text = self.basicInfo["name"] as? String ?? ""
                   headerView.btn.isHidden = true
+                  headerView.Label.isHidden = false
+                  //해당 Label.text는 BasicInfo에 있는 날짜 - 현재날짜 기점으로 일 계산
+                  headerView.Label.text = Utils().calDday(day: self.basicInfo["date"] as? String ?? "")
                   headerView.divide.isHidden = true
                   return headerView
               } else if indexPath.section == 1 {
                   guard let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "HeadCell", for: indexPath) as? HeadCell else { return UICollectionReusableView() }
                   headerView.headTitle.text = "sub"
                   headerView.divide.isHidden = false
+                  headerView.btn.isHidden = false
+                  let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapHeadBtn(_:)))
+                  headerView.btn.addGestureRecognizer(tapGesture)
+                  headerView.Label.isHidden = true
                   return headerView
               }
           }
         return UICollectionReusableView()
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         let width = self.view.bounds.width
         return CGSize(width: width, height: 50)

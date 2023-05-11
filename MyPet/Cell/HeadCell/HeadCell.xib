@@ -24,6 +24,12 @@
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dHx-AP-KCT">
+                            <rect key="frame" x="268" y="14.666666666666664" width="42" height="21"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pLD-hw-H2A">
                             <rect key="frame" x="235" y="10" width="75" height="30"/>
                             <state key="normal" title="Button"/>
@@ -45,9 +51,11 @@
                         <constraint firstItem="pLD-hw-H2A" firstAttribute="centerY" secondItem="DuH-zA-ewj" secondAttribute="centerY" id="XsA-PD-8Y7"/>
                         <constraint firstAttribute="bottom" secondItem="tec-kf-UDc" secondAttribute="bottom" id="fM6-nX-lsb"/>
                         <constraint firstItem="DuH-zA-ewj" firstAttribute="top" secondItem="eM2-Fx-MYb" secondAttribute="top" constant="10" id="ikQ-ab-8ar"/>
+                        <constraint firstItem="dHx-AP-KCT" firstAttribute="centerY" secondItem="DuH-zA-ewj" secondAttribute="centerY" id="nxP-tP-r3q"/>
                         <constraint firstItem="DuH-zA-ewj" firstAttribute="leading" secondItem="eM2-Fx-MYb" secondAttribute="leading" constant="10" id="oDJ-lh-BL1"/>
                         <constraint firstAttribute="trailing" secondItem="tec-kf-UDc" secondAttribute="trailing" id="oqh-aV-JPW"/>
                         <constraint firstItem="tec-kf-UDc" firstAttribute="leading" secondItem="eM2-Fx-MYb" secondAttribute="leading" id="ptG-gb-vvu"/>
+                        <constraint firstAttribute="trailing" secondItem="dHx-AP-KCT" secondAttribute="trailing" constant="10" id="xK5-9k-clN"/>
                     </constraints>
                 </view>
             </subviews>
@@ -59,6 +67,7 @@
                 <constraint firstAttribute="bottom" secondItem="eM2-Fx-MYb" secondAttribute="bottom" id="gSb-Gs-pk5"/>
             </constraints>
             <connections>
+                <outlet property="Label" destination="dHx-AP-KCT" id="dd4-RG-UQH"/>
                 <outlet property="btn" destination="pLD-hw-H2A" id="Jvt-gh-hAO"/>
                 <outlet property="divide" destination="tec-kf-UDc" id="OdB-5s-u6g"/>
                 <outlet property="headTitle" destination="DuH-zA-ewj" id="Edd-yM-yqs"/>

@@ -21,10 +21,10 @@ class IntroVC: UIViewController {
     private func configure() {
         //network관련 정보 확인
         ProgressHUD.show("로딩중...")
-        Network().introVCCheckAuth { result in
+        Network().introCheckAuth { result in
             if result == "true" || result == "fasle" {
                 ProgressHUD.remove()
-                Network().isFirstTrueOrFalseDB { result in
+                Network().isFirstCheck { result in
                     Utils().introVCDidFinish(result: result, vc: self)
                 }
             } else if result == "Not" {

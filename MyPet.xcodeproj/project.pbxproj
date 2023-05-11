@@ -46,6 +46,9 @@
 		E6D9C0D82A0885F60093550E /* GalleryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6D9C0D72A0885F60093550E /* GalleryVC.swift */; };
 		E6D9C0DC2A08B8C00093550E /* GalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6D9C0DA2A08B8C00093550E /* GalleryCell.swift */; };
 		E6D9C0DD2A08B8C00093550E /* GalleryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = E6D9C0DB2A08B8C00093550E /* GalleryCell.xib */; };
+		E6D9C0DF2A0B5D520093550E /* WriteVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6D9C0DE2A0B5D520093550E /* WriteVC.swift */; };
+		E6D9C0E22A0CD2F40093550E /* CategoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6D9C0E02A0CD2F40093550E /* CategoryCell.swift */; };
+		E6D9C0E32A0CD2F40093550E /* CategoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = E6D9C0E12A0CD2F40093550E /* CategoryCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -114,6 +117,9 @@
 		E6D9C0D72A0885F60093550E /* GalleryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryVC.swift; sourceTree = "<group>"; };
 		E6D9C0DA2A08B8C00093550E /* GalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryCell.swift; sourceTree = "<group>"; };
 		E6D9C0DB2A08B8C00093550E /* GalleryCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GalleryCell.xib; sourceTree = "<group>"; };
+		E6D9C0DE2A0B5D520093550E /* WriteVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteVC.swift; sourceTree = "<group>"; };
+		E6D9C0E02A0CD2F40093550E /* CategoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCell.swift; sourceTree = "<group>"; };
+		E6D9C0E12A0CD2F40093550E /* CategoryCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CategoryCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -250,6 +256,8 @@
 				E68679BE29EFB627007EB4CF /* HomeSubCell */,
 				E68679B729ED3560007EB4CF /* HomeMainCell */,
 				E68679B629ED3506007EB4CF /* HeadCell */,
+				E6D9C0E02A0CD2F40093550E /* CategoryCell.swift */,
+				E6D9C0E12A0CD2F40093550E /* CategoryCell.xib */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -321,6 +329,7 @@
 				E610826C29BC4A4200DAD1D4 /* SetVC.swift */,
 				E68679B829EFA6CA007EB4CF /* HomeSecondVC.swift */,
 				E6D9C0D72A0885F60093550E /* GalleryVC.swift */,
+				E6D9C0DE2A0B5D520093550E /* WriteVC.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -448,6 +457,7 @@
 				E610824129BC467500DAD1D4 /* Assets.xcassets in Resources */,
 				E6007B5129BEE35A008E2FE2 /* GoogleService-Info.plist in Resources */,
 				E68679BD29EFB5E8007EB4CF /* HomeSubCell.xib in Resources */,
+				E6D9C0E32A0CD2F40093550E /* CategoryCell.xib in Resources */,
 				E68679B529ED3502007EB4CF /* HeadCell.xib in Resources */,
 				E610827529BC4BE700DAD1D4 /* HomeMainCell.xib in Resources */,
 				E610823F29BC467500DAD1D4 /* Main.storyboard in Resources */,
@@ -592,6 +602,7 @@
 				E610823C29BC467500DAD1D4 /* HomeVC.swift in Sources */,
 				E68679B429ED3502007EB4CF /* HeadCell.swift in Sources */,
 				E68A3FD929BEF94A006AFFC6 /* Utils.swift in Sources */,
+				E6D9C0E22A0CD2F40093550E /* CategoryCell.swift in Sources */,
 				E610827B29BC5A3200DAD1D4 /* ImgInfo.swift in Sources */,
 				E610827D29BC5A4E00DAD1D4 /* FoodInfo.swift in Sources */,
 				E610826D29BC4A4200DAD1D4 /* SetVC.swift in Sources */,
@@ -600,6 +611,7 @@
 				E68679BC29EFB5E8007EB4CF /* HomeSubCell.swift in Sources */,
 				E610823829BC467500DAD1D4 /* AppDelegate.swift in Sources */,
 				E649E36029C158E500565CEF /* Network.swift in Sources */,
+				E6D9C0DF2A0B5D520093550E /* WriteVC.swift in Sources */,
 				E649E36529C1598800565CEF /* Alert.swift in Sources */,
 				E6D9C0D82A0885F60093550E /* GalleryVC.swift in Sources */,
 				E610823A29BC467500DAD1D4 /* SceneDelegate.swift in Sources */,

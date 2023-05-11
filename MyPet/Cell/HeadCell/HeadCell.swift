@@ -13,6 +13,7 @@ class HeadCell: UICollectionReusableView {
     @IBOutlet weak var headTitle: UILabel!
     @IBOutlet weak var btn: UIButton!
     @IBOutlet weak var divide: UIView!
+    @IBOutlet weak var Label: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()

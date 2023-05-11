@@ -115,4 +115,26 @@ class Utils: NSObject {
             }
         }
     }
+    
+    func calDday(day: String) -> String{
+        if day == "" {
+            return "0일"
+        } else {
+            let fixDay = day.replacingOccurrences(of: " ", with: "")
+            let aa = DateFormatter()
+            aa.dateFormat = "yyyy년MM월dd일EEEE"
+            aa.locale = Locale(identifier: "ko_KR")
+            guard let prevDay = aa.date(from: fixDay) else {
+                return "0일"
+            }
+            
+            let curDay = Date()
+            
+            let calendar = Calendar.current
+            let components = calendar.dateComponents([.day], from: prevDay, to: curDay)
+            let dDay = "+\(components.day!)일"
+            return dDay
+        }
+    }
 }
+

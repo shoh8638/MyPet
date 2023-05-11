@@ -28,7 +28,7 @@ class Network: NSObject {
         }
     }
     
-    func isFirstTrueOrFalseDB(completion: @escaping (String) -> ()) {
+    func isFirstCheck(completion: @escaping (String) -> ()) {
         let userId = Utils().loadFromUserDefaults(key: "userId") as! String
         self.db.collection(userId).document("BasicInfo").getDocument { (document, error) in
             if let document = document, document.exists {
@@ -44,7 +44,7 @@ class Network: NSObject {
         }
     }
     
-    func introVCCheckAuth(completion: @escaping (String) -> ()) {
+    func introCheckAuth(completion: @escaping (String) -> ()) {
         let appleIDProvider = ASAuthorizationAppleIDProvider()
         guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else {
             return completion("Not")
@@ -65,7 +65,6 @@ class Network: NSObject {
         let  userIdentifier = appleIDCredential.user
         if appleIDCredential.email == nil {
             Utils().saveToUserDefaults(value: userIdentifier, key: "userId")
-            //BasicInfo -> isFirst값에 따라 나타나는 View 변경
             vc.present(Utils().nextMainFullVC(name: "HomeSecondVC"), animated: true)
         } else {
             Utils().saveToUserDefaults(value: userIdentifier, key: "userId")
@@ -79,6 +78,7 @@ class Network: NSObject {
                 "email": email,
                 "name": "",
                 "gender": "",
+                "date": "",
                 "isFirst": false
             ]){ error in
                 if let err = error {
@@ -94,44 +94,42 @@ class Network: NSObject {
     }
     
     func createInitData(completion: @escaping () -> ()) {
-        //최초 FoodInfo db 생성
-        //저장되는건 document안에 document
-        let userId = Utils().loadFromUserDefaults(key: "userId") as! String
-        self.db.collection(userId).document("FoodInfoDB").setData([:]){ error in
-            if let err = error {
-                print("FoodInfoDB create Error: \(err)")
-            } else {
-                print("FoodInfoDB create")
+        guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else { return }
+        self.db.collection(userId).document("CategoryInfoDB").setData([
+            "Key": ["Daily", "Food", "Trip"]]){ error in
+                if let err = error {
+                    print("DB create Error: \(err)")
+                } else {
+                    completion()
+                }
             }
+    }
+    /*
+     카테고리 선택 시, 해당 카테고리 명으로 self.db.collection(userId).document("CategoryInfoDB").collection(카테고리명).document(카테고리명).setData([:]) <- 값 추가.
+     
+     타이틀+시간으로 키값으로 잡고 해당 카테고리명Key라는 이름으로 하나 생성
+     self.db.collection(userId).document(카테고리명Key).setData([:]) <- 값(배열로) 추가.
+     */
+    func updateCategoryWriteDB(category: String, date: Date, title: String, text: String, downLoadUrls: String, completion: @escaping () -> ()) {
+        guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else { return }
+        self.db.collection(userId).document("CategoryInfoDB").collection(category).document(category).setData([
+            "title": title,
+            "text": text,
+            "downLoadUrls": downLoadUrls,
+            "date": date,
+            "category": category]) {
+            error in
+            guard error == nil else { return }
+            
         }
-        //최초 Category db 생성
-        self.db.collection(userId).document("CategoryInfoDB").setData([:]){ error in
-            if let err = error {
-                print("DB create Error: \(err)")
-            } else {
-                self.db.collection(userId).document("CategoryInfoDB").collection("Food").document("Food").setData([:]) { error in
-                    if let err = error {
-                        print("CategoryInfoDB- Food create Error: \(err)")
-                    } else {
-                        print("CategoryInfoDB- Food create")
-                    }
-                }
-                self.db.collection(userId).document("CategoryInfoDB").collection("Trip").document("Trip").setData([:]) { error in
-                    if let err = error {
-                        print("CategoryInfoDB- Trip create Error: \(err)")
-                    } else {
-                        print("CategoryInfoDB- Trip create")
-                    }
-                }
-                self.db.collection(userId).document("CategoryInfoDB").collection("Daily").document("Daily").setData([:]) { error in
-                    if let err = error {
-                        print("CategoryInfoDB- Daily create Error: \(err)")
-                    } else {
-                        print("CategoryInfoDB- Daily create")
-                        completion()
-                    }
-                }
-            }
+    }
+    
+    func loadBasicInfo(completion: @escaping ([String: Any]) -> ()) {
+        guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else { return }
+        self.db.collection(userId).document("BasicInfo").getDocument { (querySnapshot, error) in
+            guard error == nil else { return }
+            guard let data = querySnapshot?.data() as? [String: Any] else { return }
+            completion(data)
         }
     }
     
@@ -217,7 +215,6 @@ class Network: NSObject {
                     let urlString = url.absoluteString
                     let current = Utils().stringFromDate(date: Date())
                     self.db.collection(userId).document("GalleryDB").collection(current).document(current).setData([
-                        "date": date,
                         "isMain": true,
                         "downLoadUrls": urlString]) { error in
                             if let err = error {
@@ -234,6 +231,7 @@ class Network: NSObject {
                         }
                     }
                     self.db.collection(userId).document("BasicInfo").updateData([
+                        "date": date,
                         "isFirst": true,
                         "gender": gender,
                         "name": name]) { err in
@@ -315,8 +313,6 @@ class Network: NSObject {
                         let isMain = data["isMain"] as? Bool ?? false
                         let url = data["downLoadUrls"] as? String ?? ""
                         if isMain {
-                            print("Document with isMain = true: \(data)")
-                            print("Document with isMain = true: \(url)")
                             completion(keys, data)
                         }
                     }
@@ -400,6 +396,16 @@ class Network: NSObject {
         self.db.collection(userId).document("GalleryDB").collection(key).document(key).updateData(["isMain": true]) { error in
             guard error == nil else { return }
             completion()
+        }
+    }
+    
+    func loadCategoryList(completion: @escaping ([String]) -> ()){
+        guard let userId = Utils().loadFromUserDefaults(key: "userId") as? String else { return }
+        self.db.collection(userId).document("CategoryInfoDB").getDocument {  (document, error) in
+            guard error == nil else { return }
+            guard let dc = document?.data() as? [String: Any] else { return }
+            guard let data = dc["Category"] as? [String] else { return }
+            completion(data)
         }
     }
 }
